@@ -1,0 +1,142 @@
+<!-- loan_calculator.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="loanForm">
+        <label for="employeeId">Employee ID:</label>
+        <input type="text" id="employeeId" required pattern="E.{3,}" title="Employee ID must start with 'E' and have at least 4 characters">
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" required>
+
+        <label for="designation">Designation:</label>
+        <select id="designation" required>
+            <option value="manager">Manager</option>
+            <option value="developer">Developer</option>
+            <option value="analyst">Analyst</option>
+        </select>
+
+        <label for="loanAmount">Loan Amount:</label>
+        <input type="number" id="loanAmount" required>
+
+        <label for="loanDate">Date of Loan Taken:</label>
+        <input type="date" id="loanDate" required>
+
+        <label for="interestRate">Interest Rate (%):</label>
+        <input type="number" id="interestRate" required>
+
+        <label for="maturityDate">Maturity Date:</label>
+        <input type="date" id="maturityDate" required>
+
+        <button type="button" onclick="calculateLoan()">Calculate Loan</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function calculateLoan() {
+            // Get input values
+            var employeeId = document.getElementById("employeeId").value;
+            var name = document.getElementById("name").value;
+            var address = document.getElementById("address").value;
+            var designation = document.getElementById("designation").value;
+            var loanAmount = parseFloat(document.getElementById("loanAmount").value);
+            var interestRate = parseFloat(document.getElementById("interestRate").value);
+            var loanDate = new Date(document.getElementById("loanDate").value);
+            var maturityDate = new Date(document.getElementById("maturityDate").value);
+
+            // Validate inputs
+            if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanDate.getTime()) || isNaN(maturityDate.getTime())) {
+                alert("Please enter valid numeric values and dates.");
+                return;
+            }
+
+            // Validate employee ID
+            if (!/^E.{3,}$/.test(employeeId)) {
+                alert("Employee ID must start with 'E' and have at least 4 characters.");
+                return;
+            }
+
+            // Calculate the number of months
+            var months = (maturityDate.getFullYear() - loanDate.getFullYear()) * 12;
+            months -= loanDate.getMonth() + 1;
+            months += maturityDate.getMonth();
+
+            // Calculate monthly interest rate
+            var monthlyInterestRate = (interestRate / 100) / 12;
+
+            // Calculate monthly payment using the formula for fixed monthly payments
+            var monthlyPayment = (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -months));
+
+            // Display result
+            var resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = '<p>Employee ID: ' + employeeId + '</p>' +
+                                 '<p>Name: ' + name + '</p>' +
+                                 '<p>Address: ' + address + '</p>' +
+                                 '<p>Designation: ' + designation + '</p>' +
+                                 '<p>Monthly Repayment Amount: $' + monthlyPayment.toFixed(2) + '</p>';
+            resultDiv.style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
